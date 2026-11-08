@@ -42,13 +42,13 @@ svg{position:absolute;bottom:0;left:0;width:100%;height:58%;pointer-events:none}
 <div id="msg">Ciao bellissima</div>
 <div id="ui">
   <button id="go">Presiona</button>
-  <label class="song"><input type="file" id="file" accept="audio/*"><span id="lbl">🎵 Elegir canción</span></label>
+  <label class="song"><input type="file" id="file" accept="audio/*"><span id="lbl">🎵 twice</span></label>
 </div>
 <svg id="garden" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMax meet"></svg>
 <audio id="aud" loop></audio>
 <script>
 // Si luego quieres dejar la canción fija, pon aquí su ruta o data URI.
-var SONG_SRC = "";
+var SONG_SRC = "canciones/cancion.mp3";
 var sky = document.getElementById('sky');
 for (var i = 0; i < 90; i++) {
   var s = document.createElement('div');
