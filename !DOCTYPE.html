@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Solange</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;background:#05071a;color:#f4ecff}
+body{background:radial-gradient(ellipse at 50% 110%,#2a1b4d 0%,#0f1238 45%,#05071a 100%);font-family:'Cormorant Garamond',Georgia,serif}
+.star{position:absolute;border-radius:50%;background:#fff;animation:tw 3s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.15}50%{opacity:1}}
+.moon{position:absolute;top:9%;right:10%;width:70px;height:70px;border-radius:50%;background:#fdf6dc;box-shadow:0 0 40px 12px rgba(253,246,220,.35)}
+h1{position:absolute;top:8%;left:0;right:0;text-align:center;margin:0;font-family:'Great Vibes','Brush Script MT',cursive;font-weight:400;font-size:clamp(3.2rem,12vw,6.5rem);text-shadow:0 0 24px rgba(200,170,255,.6)}
+#ui{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity 1s}
+#go{font-family:inherit;font-size:1.4rem;letter-spacing:.2em;text-transform:uppercase;color:#f4ecff;background:rgba(255,255,255,.06);border:1px solid rgba(244,236,255,.6);border-radius:40px;padding:14px 38px;cursor:pointer;box-shadow:0 0 22px rgba(190,150,255,.4);animation:pulse 2.4s ease-in-out infinite}
+#go:hover{background:rgba(255,255,255,.14)}
+@keyframes pulse{50%{box-shadow:0 0 38px rgba(210,170,255,.8)}}
+.song{font-size:1rem;opacity:.75;cursor:pointer;border-bottom:1px dashed rgba(244,236,255,.5)}
+.song input{display:none}
+#msg{position:absolute;top:34%;left:0;right:0;text-align:center;font-family:'Great Vibes','Brush Script MT',cursive;font-size:clamp(2.6rem,10vw,5rem);color:#ffe6f2;opacity:0;text-shadow:0 0 22px rgba(255,170,220,.8)}
+.on #msg{animation:fade 2.5s 1.8s forwards}
+.on #ui{opacity:0;pointer-events:none}
+@keyframes fade{to{opacity:1}}
+svg{position:absolute;bottom:0;left:0;width:100%;height:58%;pointer-events:none}
+.stem{fill:none;stroke:#3f9a5b;stroke-width:5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+.leaf{fill:#2f7d4a;transform-box:fill-box;transform-origin:50% 100%;transform:scale(0)}
+.bloom{transform-box:fill-box;transform-origin:50% 100%;transform:scale(0);filter:drop-shadow(0 0 8px rgba(255,200,230,.5))}
+.on .stem{animation:grow 2.6s var(--d) ease-out forwards}
+.on .leaf{animation:pop 1.2s calc(var(--d) + 1.2s) ease-out forwards}
+.on .bloom{animation:pop 1.8s calc(var(--d) + 2.2s) cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes grow{to{stroke-dashoffset:0}}
+@keyframes pop{to{transform:scale(1)}}
+</style>
+</head>
+<body>
+<div id="sky"></div>
+<div class="moon"></div>
+<h1>Solange</h1>
+<div id="msg">Ciao bellissima</div>
+<div id="ui">
+  <button id="go">Presiona</button>
+  <label class="song"><input type="file" id="file" accept="audio/*"><span id="lbl">🎵 Elegir canción</span></label>
+</div>
+<svg id="garden" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMax meet"></svg>
+<audio id="aud" loop></audio>
+<script>
+// Si luego quieres dejar la canción fija, pon aquí su ruta o data URI.
+var SONG_SRC = "";
+var sky = document.getElementById('sky');
+for (var i = 0; i < 90; i++) {
+  var s = document.createElement('div');
+  s.className = 'star';
+  var z = Math.random() * 2 + 1;
+  s.style.cssText = 'left:' + Math.random() * 100 + '%;top:' + Math.random() * 70 + '%;width:' + z + 'px;height:' + z + 'px;animation-delay:' + Math.random() * 3 + 's';
+  sky.appendChild(s);
+}
+var NS = 'http://www.w3.org/2000/svg';
+var g = document.getElementById('garden');
+function tulip(color) {
+  return '<path d="M-20 0C-26 -34 -12 -48 0 -56C12 -48 26 -34 20 0C9 9 -9 9 -20 0Z" fill="' + color + '"/>' +
+    '<path d="M0 -56C-8 -34 -6 -12 0 6C6 -12 8 -34 0 -56Z" fill="#fff" opacity=".22"/>';
+}
+function lily(color) {
+  var out = '', a = [-80, -48, -16, 16, 48, 80];
+  a.forEach(function (r) {
+    out += '<path transform="rotate(' + r + ')" d="M0 0C-11 -16 -9 -40 0 -54C9 -40 11 -16 0 0Z" fill="' + color + '" stroke="#ffd3e8" stroke-width="1"/>';
+  });
+  [-30, 0, 30].forEach(function (r) {
+    out += '<line transform="rotate(' + r + ')" x1="0" y1="0" x2="0" y2="-32" stroke="#ffd36e" stroke-width="2"/><circle transform="rotate(' + r + ')" cx="0" cy="-34" r="3.5" fill="#ff9d3c"/>';
+  });
+  return out;
+}
+var tulipColors = ['#ff5c8a', '#ff8fb1', '#c13b78', '#ffb347', '#d65cff'];
+var xs = [70, 150, 235, 320, 405, 490, 575, 660, 745, 830, 915];
+xs.forEach(function (x, i) {
+  var h = 150 + ((i * 53) % 110);
+  var isLily = i % 2 === 1;
+  var d = (i * 0.28).toFixed(2) + 's';
+  var lean = (i % 3 - 1) * 14;
+  var el = document.createElementNS(NS, 'g');
+  el.setAttribute('transform', 'translate(' + x + ',420)');
+  el.setAttribute('style', '--d:' + d);
+  el.innerHTML =
+    '<path class="stem" pathLength="1" d="M0 0C' + lean + ' ' + (-h / 3) + ' ' + (-lean) + ' ' + (-h * 0.7) + ' ' + lean * 0.3 + ' ' + (-h) + '"/>' +
+    '<path class="leaf" d="M0 -20C-34 -40 -44 -80 -40 -100C-14 -84 -2 -52 0 -20Z"/>' +
+    '<path class="leaf" d="M0 -30C32 -50 42 -84 38 -104C14 -88 2 -60 0 -30Z"/>' +
+    '<g transform="translate(' + lean * 0.3 + ',' + (-h) + ')"><g class="bloom">' +
+    (isLily ? lily(i % 4 === 1 ? '#fff4fa' : '#ffe0ef') : tulip(tulipColors[(i >> 1) % tulipColors.length])) +
+    '</g></g>';
+  g.appendChild(el);
+});
+var aud = document.getElementById('aud'), file = document.getElementById('file'), lbl = document.getElementById('lbl');
+if (SONG_SRC) { aud.src = SONG_SRC; lbl.parentNode.style.display = 'none'; }
+file.addEventListener('change', function () {
+  if (file.files[0]) {
+    aud.src = URL.createObjectURL(file.files[0]);
+    lbl.textContent = '✓ ' + file.files[0].name;
+  }
+});
+document.getElementById('go').addEventListener('click', function () {
+  document.body.classList.add('on');
+  if (aud.src) { aud.play().catch(function () {}); }
+});
+</script>
+</body>
+</html>
